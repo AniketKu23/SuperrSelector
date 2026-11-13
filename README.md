@@ -1,7 +1,7 @@
 # 🏏 SupeRR Selector Season 2: Identifying the Most Reliable Players Under Pressure
 
 [![Rajasthan Royals](https://img.shields.io/badge/Rajasthan_Royals-SupeRR_Selector_S2-FF1493?style=for-the-badge&logo=cricket)](https://www.rajasthanroyals.com/)
-[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel)](https://vercel.com)
+[![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Live_Dashboard-2ea44f?style=for-the-badge&logo=github)](https://aniketku23.github.io/SuperrSelector/)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Author](https://img.shields.io/badge/Author-Aniket_Kumar-2575FC?style=for-the-badge)](mailto:kkaniket23@gamil.com)
 
@@ -13,16 +13,17 @@
 
 ---
 
-## ⚡ Live Interactive Dashboard on Vercel
+## ⚡ Live Interactive Analytics Dashboard
 
-The live, interactive analytics dashboard with real-time match crunch simulation is hosted on Vercel:
-> 🔗 **Live Dashboard:** [Deploy to Vercel in 1-Click](#-deploying-to-vercel) or open [`index.html`](index.html) locally.
+The full interactive analytics dashboard with real-time match crunch simulation, player comparisons, and embedded methodology report is hosted live on **GitHub Pages**:
+
+> 🔗 **Live Dashboard URL:** **[https://aniketku23.github.io/SuperrSelector/](https://aniketku23.github.io/SuperrSelector/)**
 
 ---
 
 ## 📋 Official Unstop Submission Rankings (Dropdown Ready)
 
-These rankings are strictly backed by historical ball-by-ball analysis, sample size qualification ($\ge 120$ total balls, $\ge 45$ pressure balls, $\ge 8$ matches), and empirical Bayesian shrinkage. Unstop Player IDs match [`competition_team_player_mapping.csv`](Data%20Pack/competition_team_player_mapping.csv).
+These rankings are strictly backed by historical ball-by-ball analysis, sample size qualification ($\ge 120$ total balls, $\ge 45$ pressure balls, $\ge 8$ matches), and empirical Bayesian shrinkage. Unstop Player IDs match `competition_team_player_mapping.csv`.
 
 ### 🏏 Top 10 Batters Under Pressure
 | Rank | Player Name | Unstop ID | Pressure Balls | Press SR | Base SR | Δ Strike Rate | Press Avg | Press WPA | Clutch Batting Rating |
@@ -58,7 +59,7 @@ These rankings are strictly backed by historical ball-by-ball analysis, sample s
 
 ## 📐 Analytical & Mathematical Framework
 
-### 1. The Pressure Index (CPI)
+### 1. Composite Pressure Index (CPI)
 Pressure is modeled as a continuous function on $[0, 100]$:
 - **Innings 2 (The Chase):**
   $$\text{RRR Stress} = 50.0 + (\text{RRR} - 8.5) \times 7.5$$
@@ -68,39 +69,36 @@ Pressure is modeled as a continuous function on $[0, 100]$:
 - **Super Overs:** $100.0$ (maximum strain by definition).
 - **Match Multipliers:** Knockouts ($1.20\times$), Tier-1 IPL / Top-8 International ($1.15\times$).
 
-### 2. Logistic Win Expectancy (AUC: 0.8904)
+### 2. Logistic Win Expectancy (AUC: 0.8904, Brier: 0.134)
 Trained on 200,999 match states using Logistic Expectancy:
 $$\text{Logit}(WP) = -0.0174 \cdot \text{RunsNeeded} - 0.0156 \cdot \text{BallsRem} + 0.6584 \cdot \text{WicketsInHand} - 0.3632 \cdot \text{RRR}$$
-Leverage Index and Win Probability Added ($\text{WPA}$) are merged into:
+Leverage Index ($\text{LI}$) and Win Probability Added ($\text{WPA}$) are merged into:
 $$\text{Hybrid Pressure Index (HPI)} = 0.70 \times \text{CPI} + 0.30 \times \text{LeverageScore}$$
 
 ### 3. Empirical Bayes Shrinkage
-To prevent small-sample distortions ($N < 45$ balls), observed performance $\theta_{\text{sample}}$ is regressed toward the population mean $\mu_{\text{pop}}$ ($K=40$):
+To prevent small-sample distortions ($N < 45$ pressure balls), observed performance $\theta_{\text{sample}}$ is regressed toward the population mean $\mu_{\text{pop}}$ ($K=40.0$):
 $$\hat{\theta}_{\text{adj}} = \frac{N \cdot \theta_{\text{sample}} + K \cdot \mu_{\text{pop}}}{N + K}$$
 
 ---
 
-## 🚀 Deploying to Vercel
+## 🚀 Setting Up GitHub Pages (One-Click)
 
-The root of this repository is configured strictly as a **Static Web Project** (`index.html` + `vercel.json`).
+This repository includes an automated GitHub Actions deployment workflow (`.github/workflows/deploy.yml`) as well as direct root file hosting.
 
-### Direct GitHub Import
-1. Push this repository to your GitHub account:
-   ```bash
-   git add .
-   git commit -m "Update Vercel static deployment"
-   git push
-   ```
-2. In [Vercel](https://vercel.com/new), import your repository.
-3. Keep the Framework Preset as **Other** (Static).
-4. Click **Deploy**. Vercel will publish your dashboard to global CDN in seconds with zero build errors!
+To activate GitHub Pages for your repository:
+1. Navigate to **Settings** &rarr; **Pages** in this GitHub repository (`https://github.com/AniketKu23/SuperrSelector/settings/pages`).
+2. Under **Build and deployment** &rarr; **Source**:
+   * Select **GitHub Actions** (the automated workflow will publish the site immediately), **OR**
+   * Select **Deploy from a branch** &rarr; Branch: **`main`** &rarr; Folder: **`/ (root)`** &rarr; Click **Save**.
+3. Your dashboard will be live at:
+   **`https://aniketku23.github.io/SuperrSelector/`**
 
 ---
 
 ## 💻 Local Development & Usage
 
 ### 1. View the Web Dashboard locally
-Double-click [`index.html`](index.html) or run:
+Double-click [`index.html`](index.html) in your browser or run:
 ```bash
 npx serve .
 ```
@@ -128,14 +126,21 @@ python scripts/generate_pdf_report.py
 ## 📁 Repository Structure
 
 ```
-├── index.html                   # Vercel entry point (Interactive Web Dashboard)
-├── vercel.json                  # Vercel configuration (cleanUrls, rewrites, headers)
-├── .vercelignore                # Directs Vercel to ignore python files
+├── index.html                   # Interactive Web Dashboard (GitHub Pages entry point)
+├── .nojekyll                    # Bypasses Jekyll for GitHub Pages
 ├── .gitignore                   # Clean Git tracking configuration
 ├── top_batters_pressure.csv     # Enriched batter ratings output
 ├── top_bowlers_pressure.csv     # Enriched bowler ratings output
 ├── report_screenshots/          # 6 HD screenshots of the formal methodology dossier
+│   ├── page_1.png ... page_6.png
 ├── assets/                      # HD dashboard screenshots and visual figures
+│   ├── top10_batters.png
+│   ├── top10_bowlers.png
+│   ├── batting_matrix.png
+│   ├── bowling_matrix.png
+│   └── pressure_validation.png
+├── .github/workflows/           # Automated GitHub Pages CI/CD workflow
+│   └── deploy.yml
 └── scripts/                     # Python modeling, analytics & Streamlit scripts
     ├── requirements.txt         # Python dependencies
     ├── app.py                   # Local interactive Streamlit web application
@@ -152,3 +157,4 @@ python scripts/generate_pdf_report.py
 **Aniket Kumar**  
 - **Email:** [kkaniket23@gamil.com](mailto:kkaniket23@gamil.com)  
 - **Hackathon:** Rajasthan Royals SupeRR Selector Season 2 (Round 1)
+- **Repository:** [https://github.com/AniketKu23/SuperrSelector](https://github.com/AniketKu23/SuperrSelector)
