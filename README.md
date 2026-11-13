@@ -130,9 +130,8 @@ python scripts/generate_pdf_report.py
 ```
 ├── index.html                   # Vercel entry point (Interactive Web Dashboard)
 ├── dashboard.html               # Portable mirror of dashboard
-├── vercel.json                  # Vercel configuration (framework: null, cleanUrls)
+├── vercel.json                  # Vercel configuration (cleanUrls, rewrites, headers)
 ├── .vercelignore                # Directs Vercel to ignore python files
-├── package.json                 # Project metadata & npm scripts
 ├── .gitignore                   # Clean Git tracking configuration
 ├── SupeRR_Selector_Season_2_Methodology_Report.pdf  # Formal 6-Page PDF Submission
 ├── top_batters_pressure.csv     # Enriched batter ratings output
