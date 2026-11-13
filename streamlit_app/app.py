@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import os
 
 st.set_page_config(
@@ -38,11 +37,24 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Resolve paths robustly whether executed from root or streamlit_app/
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(CURRENT_DIR) if os.path.basename(CURRENT_DIR) == 'streamlit_app' else CURRENT_DIR
+
+def get_path(rel_path):
+    p1 = os.path.join(ROOT_DIR, rel_path)
+    if os.path.exists(p1):
+        return p1
+    p2 = os.path.join(CURRENT_DIR, rel_path)
+    if os.path.exists(p2):
+        return p2
+    return rel_path
+
 # Load data
 @st.cache_data
 def load_data():
-    top_bat = pd.read_csv('top_batters_pressure.csv')
-    top_bowl = pd.read_csv('top_bowlers_pressure.csv')
+    top_bat = pd.read_csv(get_path('top_batters_pressure.csv'))
+    top_bowl = pd.read_csv(get_path('top_bowlers_pressure.csv'))
     return top_bat, top_bowl
 
 top_batters, top_bowlers = load_data()
@@ -63,7 +75,7 @@ col5.metric("#1 Clutch Bowler", "M. Pathirana", "Rating: 79.7")
 st.markdown("---")
 
 # Sidebar Controls
-st.sidebar.image("assets/top10_batters.png", use_container_width=True)
+st.sidebar.image(get_path("assets/top10_batters.png"), use_container_width=True)
 st.sidebar.header("🔍 Selector Controls")
 min_pressure_balls = st.sidebar.slider("Minimum High-Pressure Balls", 30, 150, 45, 5)
 competition_scope = st.sidebar.selectbox("Competition Scope", ["All Competitions (IPL & T20I)", "IPL Only", "T20I Only"])
@@ -99,9 +111,9 @@ with tab1:
     
     col_a, col_b = st.columns(2)
     with col_a:
-        st.image("assets/top10_batters.png", caption="Top 10 Batters Clutch Rating Breakdown", use_container_width=True)
+        st.image(get_path("assets/top10_batters.png"), caption="Top 10 Batters Clutch Rating Breakdown", use_container_width=True)
     with col_b:
-        st.image("assets/batting_matrix.png", caption="Pressure Batting Matrix (SR vs Average)", use_container_width=True)
+        st.image(get_path("assets/batting_matrix.png"), caption="Pressure Batting Matrix (SR vs Average)", use_container_width=True)
 
 with tab2:
     st.subheader("Top 10 Most Reliable Bowlers Under Pressure")
@@ -121,9 +133,9 @@ with tab2:
     
     col_c, col_d = st.columns(2)
     with col_c:
-        st.image("assets/top10_bowlers.png", caption="Top 10 Bowlers Clutch Rating Breakdown", use_container_width=True)
+        st.image(get_path("assets/top10_bowlers.png"), caption="Top 10 Bowlers Clutch Rating Breakdown", use_container_width=True)
     with col_d:
-        st.image("assets/bowling_matrix.png", caption="Pressure Bowling Matrix (Economy vs Wicket Strike Rate)", use_container_width=True)
+        st.image(get_path("assets/bowling_matrix.png"), caption="Pressure Bowling Matrix (Economy vs Wicket Strike Rate)", use_container_width=True)
 
 with tab3:
     st.subheader("⚡ Live Match Situation Crunch Simulator")
@@ -144,14 +156,12 @@ with tab3:
     rrr = (needed / balls_rem) * 6 if balls_rem > 0 else 0
     w_in_hand = max(1, 10 - wkts_down)
     
-    # Calculate pressure
     if inn == 2:
         rrr_stress = 50.0 + (rrr - 8.5) * 7.5
         w_factor = 1.0 + (6 - w_in_hand) * 0.12 if w_in_hand <= 5 else 1.0
         phase = (30 - balls_rem) * 0.8 if balls_rem <= 30 else 0
         p_score = (rrr_stress * w_factor) + phase
         
-        # Logistic WP
         z = -0.0174 * needed - 0.0156 * balls_rem + 0.658 * w_in_hand - 0.363 * rrr
         wp = 1.0 / (1.0 + np.exp(-z)) * 100.0
     else:
@@ -175,7 +185,7 @@ with tab3:
 
 with tab4:
     st.subheader("Methodology, Population Stress Validation & Reproducibility")
-    st.image("assets/pressure_validation.png", caption="Empirical Validation: Batting Average plunges 35% in extreme pressure as bowling economy spikes", use_container_width=True)
+    st.image(get_path("assets/pressure_validation.png"), caption="Empirical Validation: Batting Average plunges 35% in extreme pressure as bowling economy spikes", use_container_width=True)
     
     st.markdown("""
     ### Unstop Dropdown Verification & Selection

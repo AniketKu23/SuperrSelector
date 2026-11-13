@@ -113,10 +113,10 @@ Simply double-click [`index.html`](index.html) or run a local web server:
 npx serve .
 ```
 
-### 2. Run the Interactive Streamlit Dashboard
+### 2. Run the Interactive Streamlit Dashboard Locally
 ```bash
 pip install -r requirements.txt
-streamlit run app.py
+streamlit run streamlit_app/app.py
 ```
 
 ### 3. Re-run Pipeline or Rebuild PDF Report
@@ -139,10 +139,13 @@ python generate_pdf_report.py
 ├── index.html                   # Vercel entry point (Interactive Web Dashboard)
 ├── dashboard.html               # Portable mirror of dashboard
 ├── vercel.json                  # Vercel configuration & header rules
+├── .vercelignore                # Directs Vercel to host strictly as a static web project
 ├── package.json                 # Project metadata & npm scripts
 ├── requirements.txt             # Python dependencies
 ├── .gitignore                   # Clean Git tracking configuration
 ├── SupeRR_Selector_Season_2_Methodology_Report.pdf  # Formal 6-Page PDF Submission
+├── streamlit_app/
+│   └── app.py                   # Local interactive Streamlit web dashboard
 ├── compute_rankings.py          # Core modeling, win probability & shrinkage engine
 ├── build_model.py               # Feature extraction & situation parser
 ├── generate_pdf_report.py       # ReportLab PDF compilation script
