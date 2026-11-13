@@ -129,22 +129,20 @@ python scripts/generate_pdf_report.py
 
 ```
 ├── index.html                   # Vercel entry point (Interactive Web Dashboard)
-├── dashboard.html               # Portable mirror of dashboard
 ├── vercel.json                  # Vercel configuration (cleanUrls, rewrites, headers)
 ├── .vercelignore                # Directs Vercel to ignore python files
 ├── .gitignore                   # Clean Git tracking configuration
-├── SupeRR_Selector_Season_2_Methodology_Report.pdf  # Formal 6-Page PDF Submission
 ├── top_batters_pressure.csv     # Enriched batter ratings output
 ├── top_bowlers_pressure.csv     # Enriched bowler ratings output
-├── report_screenshots/          # 6 HD screenshots of the PDF methodology report
-├── assets/                      # HD dashboard screenshots and chart figures
+├── report_screenshots/          # 6 HD screenshots of the formal methodology dossier
+├── assets/                      # HD dashboard screenshots and visual figures
 └── scripts/                     # Python modeling, analytics & Streamlit scripts
     ├── requirements.txt         # Python dependencies
     ├── app.py                   # Local interactive Streamlit web application
     ├── compute_rankings.py      # Core modeling, win probability & shrinkage engine
     ├── build_model.py           # Feature extraction & situation parser
     ├── generate_charts.py       # Visualization generator
-    ├── generate_pdf_report.py   # ReportLab PDF compilation script
+    ├── generate_pdf_report.py   # ReportLab PDF compilation script (generates Unstop PDF)
     └── render_pdf_pages.py      # High-resolution PDF-to-PNG renderer
 ```
 

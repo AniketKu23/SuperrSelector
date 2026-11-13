@@ -1,3 +1,6 @@
+# PDF documents (uploaded directly to Unstop submission)
+*.pdf
+
 # Raw data pack & binary caches (exclude large 41MB delivery CSV)
 Data Pack/
 *.feather

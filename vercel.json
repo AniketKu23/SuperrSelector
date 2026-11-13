@@ -23,19 +23,6 @@
           "value": "1; mode=block"
         }
       ]
-    },
-    {
-      "source": "/SupeRR_Selector_Season_2_Methodology_Report.pdf",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/pdf"
-        },
-        {
-          "key": "Content-Disposition",
-          "value": "inline; filename=\"SupeRR_Selector_Season_2_Methodology_Report.pdf\""
-        }
-      ]
     }
   ]
 }
