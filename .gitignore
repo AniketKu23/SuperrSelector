@@ -1,0 +1,27 @@
+# Raw data pack (exclude large 41MB delivery CSV from web deployment)
+Data Pack/
+*.feather
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Node / Vercel
+node_modules/
+.vercel/
+npm-debug.log*
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+__MACOSX/
+
+# Logs
+*.log

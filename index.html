@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SupeRR Selector S2 | Clutch Performance Analytics - Aniket Kumar</title>
+  <meta name="description" content="Rajasthan Royals SupeRR Selector Season 2 Analytics Dossier & Interactive Pressure Engine by Aniket Kumar.">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-card: #131a2a;
+      --bg-card-hover: #1c273e;
+      --accent-pink: #ff1493;
+      --accent-blue: #2575fc;
+      --accent-gold: #ffd700;
+      --accent-teal: #00f2fe;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #232f48;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg-primary); color: var(--text-main); padding: 24px; line-height: 1.5; }
+    
+    .top-bar { display: flex; justify-content: space-between; align-items: center; background: #0e1524; border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; margin-bottom: 20px; font-size: 0.85rem; }
+    .author-chip { display: flex; align-items: center; gap: 8px; color: #cbd5e1; }
+    .author-chip strong { color: #fff; }
+    .author-chip a { color: var(--accent-teal); text-decoration: none; }
+    .author-chip a:hover { text-decoration: underline; }
+    .btn-group { display: flex; gap: 10px; }
+    .btn { background: #1e293b; color: #fff; border: 1px solid var(--border); padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn:hover { background: #2d3b55; }
+    .btn.primary { background: linear-gradient(135deg, var(--accent-pink), var(--accent-blue)); border: none; }
+    .btn.primary:hover { opacity: 0.9; }
+
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 20px; margin-bottom: 24px; }
+    .badge { background: linear-gradient(135deg, var(--accent-pink), var(--accent-blue)); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .title-block h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(90deg, #fff, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .title-block p { color: var(--text-muted); font-size: 1rem; margin-top: 4px; }
+    
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; position: relative; overflow: hidden; }
+    .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-blue); }
+    .kpi-card.pink::after { background: var(--accent-pink); }
+    .kpi-card.gold::after { background: var(--accent-gold); }
+    .kpi-card.teal::after { background: var(--accent-teal); }
+    .kpi-val { font-size: 1.9rem; font-weight: 800; color: #fff; margin-top: 4px; }
+    .kpi-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .tabs { display: flex; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; overflow-x: auto; }
+    .tab-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; white-space: nowrap; }
+    .tab-btn:hover { background: var(--bg-card); color: #fff; }
+    .tab-btn.active { background: linear-gradient(135deg, rgba(255, 20, 147, 0.2), rgba(37, 117, 252, 0.2)); border-color: var(--accent-pink); color: #fff; }
+
+    .content-panel { display: none; }
+    .content-panel.active { display: block; }
+
+    .grid-2 { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 20px; margin-bottom: 28px; }
+    @media (max-width: 950px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+    
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 600px; }
+    th { text-align: left; padding: 12px 10px; color: var(--text-muted); border-bottom: 1px solid var(--border); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+    td { padding: 12px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+    tr:hover { background: var(--bg-card-hover); }
+    .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #1e293b; font-weight: 700; font-size: 0.8rem; }
+    .rank-1 { background: var(--accent-gold); color: #000; }
+    .rank-2 { background: #e2e8f0; color: #000; }
+    .rank-3 { background: #cd7f32; color: #fff; }
+    .rating-pill { background: rgba(255, 20, 147, 0.15); color: var(--accent-pink); padding: 4px 10px; border-radius: 12px; font-weight: 700; }
+    .rating-pill.blue { background: rgba(37, 117, 252, 0.15); color: var(--accent-teal); }
+    .positive-delta { color: #10b981; font-weight: 700; }
+    .negative-delta { color: #ef4444; font-weight: 700; }
+
+    .simulator-box { background: linear-gradient(135deg, rgba(37, 117, 252, 0.08), rgba(255, 20, 147, 0.08)); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-top: 10px; }
+    .sim-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .sim-field label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
+    .sim-field input, .sim-field select { width: 100%; background: #0c1220; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 6px; font-size: 1rem; }
+    .sim-result { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; background: #090e1a; padding: 18px; border-radius: 8px; border-left: 4px solid var(--accent-gold); }
+    .sim-val-box h3 { font-size: 1.8rem; font-weight: 800; color: var(--accent-gold); }
+    .sim-val-box p { font-size: 0.85rem; color: var(--text-muted); }
+
+    footer { text-align: center; border-top: 1px solid var(--border); padding-top: 24px; margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Metadata & Navigation Bar -->
+  <div class="top-bar">
+    <div class="author-chip">
+      <span>👤 <strong>Lead Analyst:</strong> Aniket Kumar</span>
+      <span>•</span>
+      <span>✉️ <a href="mailto:kkaniket23@gamil.com">kkaniket23@gamil.com</a></span>
+      <span>•</span>
+      <span>🏆 <strong>Rajasthan Royals SupeRR Selector Season 2</strong></span>
+    </div>
+    <div class="btn-group">
+      <a href="SupeRR_Selector_Season_2_Methodology_Report.pdf" download class="btn primary">📥 Download PDF Report</a>
+      <a href="https://github.com" target="_blank" class="btn">⚡ GitHub Repository</a>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="title-block">
+      <span class="badge">Rajasthan Royals Analytics</span>
+      <h1>SupeRR Selector Season 2</h1>
+      <p>Identify the Most Reliable Players Under Pressure | Empirical Bayesian Hybrid Pressure Model</p>
+    </div>
+    <div style="text-align: right;">
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Competition Dataset: 2022–2026</span><br>
+      <strong style="color: var(--accent-gold);">IPL & T20I Ball-by-Ball Engine</strong>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card pink">
+      <div class="kpi-label">Deliveries Analyzed</div>
+      <div class="kpi-val">200,999</div>
+    </div>
+    <div class="kpi-card teal">
+      <div class="kpi-label">Total Matches</div>
+      <div class="kpi-val">883</div>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-label">High-Pressure Balls</div>
+      <div class="kpi-val">94,841 (47.2%)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Win Probability AUC</div>
+      <div class="kpi-val">0.890</div>
+    </div>
+    <div class="kpi-card pink">
+      <div class="kpi-label">Elite Finishers Evaluated</div>
+      <div class="kpi-val">1,217</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('batters')">🏏 Top 10 Batters</button>
+    <button class="tab-btn" onclick="switchTab('bowlers')">🎯 Top 10 Bowlers</button>
+    <button class="tab-btn" onclick="switchTab('simulator')">⚡ Match Crunch Simulator</button>
+    <button class="tab-btn" onclick="switchTab('methodology')">📐 Methodology & Validation</button>
+    <button class="tab-btn" onclick="switchTab('report')">📄 Methodology PDF Report</button>
+  </div>
+
+  <!-- BATTERS TAB -->
+  <div id="batters" class="content-panel active">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">
+          <span>Top 10 Most Reliable Batters Under Pressure</span>
+          <span style="font-size: 0.8rem; color: var(--accent-pink);">Official Unstop Dropdown Order</span>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player Name</th>
+                <th>Unstop ID</th>
+                <th>Balls</th>
+                <th>Press SR</th>
+                <th>Press Avg</th>
+                <th>Δ SR</th>
+                <th>WPA</th>
+                <th>Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rank-badge rank-1">1</span></td>
+                <td><strong>Rinku Singh</strong></td>
+                <td><code>4708</code></td>
+                <td>459</td>
+                <td>194.8</td>
+                <td>29.8</td>
+                <td class="positive-delta">+42.1</td>
+                <td>+3.77</td>
+                <td><span class="rating-pill">77.1</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-2">2</span></td>
+                <td><strong>Suryakumar Yadav</strong></td>
+                <td><code>1699</code></td>
+                <td>430</td>
+                <td>202.1</td>
+                <td>31.0</td>
+                <td class="positive-delta">+35.7</td>
+                <td>+2.04</td>
+                <td><span class="rating-pill">77.1</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-3">3</span></td>
+                <td><strong>Tristan Stubbs</strong></td>
+                <td><code>20702</code></td>
+                <td>392</td>
+                <td>196.7</td>
+                <td>33.5</td>
+                <td class="positive-delta">+46.8</td>
+                <td>+1.59</td>
+                <td><span class="rating-pill">75.2</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">4</span></td>
+                <td><strong>Namboori Tilak Varma</strong></td>
+                <td><code>7897</code></td>
+                <td>561</td>
+                <td>187.7</td>
+                <td>31.0</td>
+                <td class="positive-delta">+44.7</td>
+                <td>-0.30</td>
+                <td><span class="rating-pill">74.9</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">5</span></td>
+                <td><strong>Tim David</strong></td>
+                <td><code>6396</code></td>
+                <td>476</td>
+                <td>202.3</td>
+                <td>31.1</td>
+                <td class="positive-delta">+24.7</td>
+                <td>+3.27</td>
+                <td><span class="rating-pill">74.5</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">6</span></td>
+                <td><strong>David Miller</strong></td>
+                <td><code>1077</code></td>
+                <td>571</td>
+                <td>178.6</td>
+                <td>31.9</td>
+                <td class="positive-delta">+29.3</td>
+                <td>+1.05</td>
+                <td><span class="rating-pill">70.9</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">7</span></td>
+                <td><strong>Shashank Singh</strong></td>
+                <td><code>2756</code></td>
+                <td>288</td>
+                <td>184.4</td>
+                <td>48.3</td>
+                <td class="positive-delta">+22.8</td>
+                <td>+0.89</td>
+                <td><span class="rating-pill">70.2</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">8</span></td>
+                <td><strong>Dinesh Karthik</strong></td>
+                <td><code>143</code></td>
+                <td>354</td>
+                <td>200.6</td>
+                <td>24.5</td>
+                <td class="positive-delta">+33.3</td>
+                <td>-0.75</td>
+                <td><span class="rating-pill">68.1</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">9</span></td>
+                <td><strong>Nicholas Pooran</strong></td>
+                <td><code>3125</code></td>
+                <td>405</td>
+                <td>192.3</td>
+                <td>22.3</td>
+                <td class="positive-delta">+35.3</td>
+                <td>-0.09</td>
+                <td><span class="rating-pill">67.2</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">10</span></td>
+                <td><strong>Marcus Stoinis</strong></td>
+                <td><code>2639</code></td>
+                <td>394</td>
+                <td>193.7</td>
+                <td>25.4</td>
+                <td class="positive-delta">+40.1</td>
+                <td>-1.60</td>
+                <td><span class="rating-pill">66.3</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Batting Clutch Rating Comparison</div>
+        <canvas id="battingChart" height="260"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOWLERS TAB -->
+  <div id="bowlers" class="content-panel">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">
+          <span>Top 10 Most Reliable Bowlers Under Pressure</span>
+          <span style="font-size: 0.8rem; color: var(--accent-teal);">Official Unstop Dropdown Order</span>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player Name</th>
+                <th>Unstop ID</th>
+                <th>Balls</th>
+                <th>Press Econ</th>
+                <th>Wickets</th>
+                <th>Δ Econ</th>
+                <th>WPA</th>
+                <th>Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rank-badge rank-1">1</span></td>
+                <td><strong>Matheesha Pathirana</strong></td>
+                <td><code>8661</code></td>
+                <td>490</td>
+                <td>7.54</td>
+                <td>53</td>
+                <td class="positive-delta">+0.25</td>
+                <td>+3.77</td>
+                <td><span class="rating-pill blue">79.7</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-2">2</span></td>
+                <td><strong>Abrar Ahmed</strong></td>
+                <td><code>5979</code></td>
+                <td>138</td>
+                <td>4.65</td>
+                <td>15</td>
+                <td class="positive-delta">+1.91</td>
+                <td>+1.05</td>
+                <td><span class="rating-pill blue">77.3</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-3">3</span></td>
+                <td><strong>Mohammad Nawaz</strong></td>
+                <td><code>2490</code></td>
+                <td>120</td>
+                <td>4.75</td>
+                <td>19</td>
+                <td class="positive-delta">+2.29</td>
+                <td>+0.97</td>
+                <td><span class="rating-pill blue">77.0</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">4</span></td>
+                <td><strong>Jasprit Bumrah</strong></td>
+                <td><code>2933</code></td>
+                <td>507</td>
+                <td>7.14</td>
+                <td>46</td>
+                <td class="negative-delta">-0.28</td>
+                <td>+1.67</td>
+                <td><span class="rating-pill blue">76.3</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">5</span></td>
+                <td><strong>Sunil Narine</strong></td>
+                <td><code>781</code></td>
+                <td>274</td>
+                <td>6.74</td>
+                <td>27</td>
+                <td class="positive-delta">+0.01</td>
+                <td>+2.63</td>
+                <td><span class="rating-pill blue">74.3</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">6</span></td>
+                <td><strong>Sufiyan Muqeem</strong></td>
+                <td><code>34485</code></td>
+                <td>136</td>
+                <td>5.74</td>
+                <td>15</td>
+                <td class="positive-delta">+0.18</td>
+                <td>+0.63</td>
+                <td><span class="rating-pill blue">71.5</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">7</span></td>
+                <td><strong>Eshan Malinga</strong></td>
+                <td><code>39657</code></td>
+                <td>289</td>
+                <td>7.95</td>
+                <td>26</td>
+                <td class="positive-delta">+0.64</td>
+                <td>+1.68</td>
+                <td><span class="rating-pill blue">70.7</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">8</span></td>
+                <td><strong>Mitchell Santner</strong></td>
+                <td><code>4101</code></td>
+                <td>253</td>
+                <td>6.90</td>
+                <td>22</td>
+                <td class="positive-delta">+0.30</td>
+                <td>+1.22</td>
+                <td><span class="rating-pill blue">70.6</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">9</span></td>
+                <td><strong>Arshdeep Singh</strong></td>
+                <td><code>6464</code></td>
+                <td>997</td>
+                <td>9.19</td>
+                <td>93</td>
+                <td class="negative-delta">-0.58</td>
+                <td>+8.48</td>
+                <td><span class="rating-pill blue">70.2</span></td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge">10</span></td>
+                <td><strong>Akeal Hosein</strong></td>
+                <td><code>2417</code></td>
+                <td>101</td>
+                <td>5.23</td>
+                <td>17</td>
+                <td class="positive-delta">+2.30</td>
+                <td>+1.53</td>
+                <td><span class="rating-pill blue">70.1</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Bowling Clutch Rating Comparison</div>
+        <canvas id="bowlingChart" height="260"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMULATOR TAB -->
+  <div id="simulator" class="content-panel">
+    <div class="simulator-box">
+      <h2 style="margin-bottom: 8px;">Real-Time Match Pressure & Win Expectancy Simulator</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">Engineered by Aniket Kumar. Adjust game state parameters to calculate instant situational pressure, win probability, and tactical recommendations.</p>
+      
+      <div class="sim-grid">
+        <div class="sim-field">
+          <label>Innings</label>
+          <select id="simInnings" onchange="runSimulation()">
+            <option value="2">2nd Innings (The Chase)</option>
+            <option value="1">1st Innings (Setting Target)</option>
+          </select>
+        </div>
+        <div class="sim-field">
+          <label>Target / Score</label>
+          <input type="number" id="simTarget" value="180" oninput="runSimulation()">
+        </div>
+        <div class="sim-field">
+          <label>Current Runs Scored</label>
+          <input type="number" id="simScore" value="142" oninput="runSimulation()">
+        </div>
+        <div class="sim-field">
+          <label>Balls Remaining</label>
+          <input type="number" id="simBalls" value="18" oninput="runSimulation()">
+        </div>
+        <div class="sim-field">
+          <label>Wickets Down</label>
+          <input type="number" id="simWickets" value="5" max="9" oninput="runSimulation()">
+        </div>
+        <div class="sim-field">
+          <label>Match Context</label>
+          <select id="simStakes" onchange="runSimulation()">
+            <option value="knockout">Knockout / Playoff Final (1.20x)</option>
+            <option value="ipl">IPL League Match (1.10x)</option>
+            <option value="bilateral">Standard T20I (1.00x)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sim-result">
+        <div class="sim-val-box" style="flex: 1;">
+          <h3 id="simPressScore">88.4 / 100</h3>
+          <p>Calculated Situational Pressure (Extreme Tier)</p>
+        </div>
+        <div class="sim-val-box" style="flex: 1;">
+          <h3 id="simWinProb" style="color: var(--accent-pink);">34.2%</h3>
+          <p>Batting Team Win Probability (Logistic Expectancy)</p>
+        </div>
+        <div class="sim-val-box" style="flex: 1.5;">
+          <h3 id="simRRR" style="color: var(--accent-teal);">12.67 RPO</h3>
+          <p id="simTactical">Required: 38 runs off 18 balls. Tactical Pick: <strong>Rinku Singh</strong> vs <strong>Matheesha Pathirana</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METHODOLOGY TAB -->
+  <div id="methodology" class="content-panel">
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="card-title">Mathematical Architecture of the Hybrid Pressure Model</div>
+      <p style="color: var(--text-muted); margin-bottom: 14px;">The SupeRR Selector framework integrates situational physics with Win Probability leverage and Empirical Bayes shrinkage to evaluate true underlying player capability.</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+        <div style="background: #0d1424; padding: 16px; border-radius: 8px; border-left: 3px solid var(--accent-pink);">
+          <strong style="color: var(--accent-pink);">1. Composite Pressure Index (CPI)</strong>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 6px;">
+            Innings 2: CPI = [50 + (RRR - 8.5) &times; 7.5] &times; WicketFactor + DeathPhaseStress + Closeness.<br>
+            Innings 1: CPI = 38 + EarlyCollapseStress + DeathAccelerationStress.<br>
+            Knockout & IPL contextual weighting (1.10x - 1.20x).
+          </p>
+        </div>
+        <div style="background: #0d1424; padding: 16px; border-radius: 8px; border-left: 3px solid var(--accent-blue);">
+          <strong style="color: var(--accent-blue);">2. Calibrated Win Probability & WPA</strong>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 6px;">
+            Logistic Win Expectancy trained on 200,999 deliveries (AUC: 0.890, Brier: 0.134).<br>
+            Leverage Index: LI = |&Delta;WP<sub>max</sub>| &times; 10.<br>
+            Hybrid Pressure: 70% Situational CPI + 30% Leverage Index.
+          </p>
+        </div>
+        <div style="background: #0d1424; padding: 16px; border-radius: 8px; border-left: 3px solid var(--accent-gold);">
+          <strong style="color: var(--accent-gold);">3. Empirical Bayes Shrinkage</strong>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 6px;">
+            &theta;<sub>adj</sub> = [N &times; &theta;<sub>sample</sub> + K &times; &mu;<sub>population</sub>] / (N + K).<br>
+            Eliminates small-sample outliers (&lt; 45 balls) while rewarding proven multi-season consistency.<br>
+            Logarithmic sample volume factor ensures statistical confidence.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF REPORT VIEW TAB -->
+  <div id="report" class="content-panel">
+    <div class="card">
+      <div class="card-title">
+        <span>Formal Methodology Report (PDF Dossier)</span>
+        <a href="SupeRR_Selector_Season_2_Methodology_Report.pdf" download class="btn primary">📥 Download PDF (6 Pages)</a>
+      </div>
+      <p style="color: var(--text-muted); margin-bottom: 16px;">Author: <strong>Aniket Kumar</strong> (kkaniket23@gamil.com) | Prepared for Rajasthan Royals Scouting & Analytics.</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+        <img src="report_screenshots/page_1.png" alt="Report Page 1" style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+        <img src="report_screenshots/page_2.png" alt="Report Page 2" style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+        <img src="report_screenshots/page_3.png" alt="Report Page 3" style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+        <img src="report_screenshots/page_4.png" alt="Report Page 4" style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+        <img src="report_screenshots/page_5.png" alt="Report Page 5" style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+        <img src="report_screenshots/page_6.png" alt="Report Page 6" style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Developed by <strong>Aniket Kumar</strong> (<a href="mailto:kkaniket23@gamil.com" style="color: var(--accent-pink); text-decoration: none;">kkaniket23@gamil.com</a>) for the <strong>Rajasthan Royals SupeRR Selector Season 2</strong> Hackathon.</p>
+    <p style="margin-top: 4px; font-size: 0.75rem; color: #64748b;">Dataset: 2022–2026 IPL & T20 Internationals (200,999 Deliveries). All rights reserved.</p>
+  </footer>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // Chart.js renderers
+    window.onload = function() {
+      // Batting Chart
+      const ctxBat = document.getElementById('battingChart').getContext('2d');
+      new Chart(ctxBat, {
+        type: 'bar',
+        data: {
+          labels: ['Rinku', 'Suryakumar', 'Stubbs', 'Tilak Varma', 'David', 'Miller', 'Shashank', 'Karthik', 'Pooran', 'Stoinis'],
+          datasets: [{
+            label: 'Clutch Batting Rating',
+            data: [77.1, 77.1, 75.2, 74.9, 74.5, 70.9, 70.2, 68.1, 67.2, 66.3],
+            backgroundColor: 'rgba(255, 20, 147, 0.75)',
+            borderColor: '#ffd700',
+            borderWidth: 1,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { min: 50, max: 85, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
+            x: { ticks: { color: '#f8fafc', font: { weight: 'bold' } } }
+          }
+        }
+      });
+
+      // Bowling Chart
+      const ctxBowl = document.getElementById('bowlingChart').getContext('2d');
+      new Chart(ctxBowl, {
+        type: 'bar',
+        data: {
+          labels: ['Pathirana', 'Abrar', 'Nawaz', 'Bumrah', 'Narine', 'Muqeem', 'E. Malinga', 'Santner', 'Arshdeep', 'Hosein'],
+          datasets: [{
+            label: 'Clutch Bowling Rating',
+            data: [79.7, 77.3, 77.0, 76.3, 74.3, 71.5, 70.7, 70.6, 70.2, 70.1],
+            backgroundColor: 'rgba(37, 117, 252, 0.75)',
+            borderColor: '#00f2fe',
+            borderWidth: 1,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { min: 50, max: 85, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } },
+            x: { ticks: { color: '#f8fafc', font: { weight: 'bold' } } }
+          }
+        }
+      });
+    };
+
+    function runSimulation() {
+      const inn = parseInt(document.getElementById('simInnings').value);
+      const target = parseFloat(document.getElementById('simTarget').value) || 180;
+      const score = parseFloat(document.getElementById('simScore').value) || 140;
+      const balls = parseFloat(document.getElementById('simBalls').value) || 18;
+      const wkts = parseFloat(document.getElementById('simWickets').value) || 5;
+      const stakes = document.getElementById('simStakes').value;
+      
+      const needed = Math.max(0, target - score);
+      const rrr = balls > 0 ? (needed / balls) * 6 : 0;
+      const wInHand = Math.max(1, 10 - wkts);
+
+      let p = 50.0;
+      let wp = 50.0;
+
+      if (inn === 2) {
+        let rrrStress = 50.0 + (rrr - 8.5) * 7.5;
+        let wFactor = wInHand <= 5 ? 1.0 + (6 - wInHand) * 0.12 : 1.0;
+        let phase = balls <= 30 ? (30 - balls) * 0.8 : 0;
+        p = (rrrStress * wFactor) + phase;
+        
+        const z = -0.0174 * needed - 0.0156 * balls + 0.658 * wInHand - 0.363 * rrr;
+        wp = 1 / (1 + Math.exp(-z)) * 100;
+      } else {
+        p = 38.0 + (wkts >= 4 ? 25.0 : 0) + (balls <= 30 ? 30.0 : 0);
+        wp = 50.0 + (score - (120 - balls) * 1.4) * 0.5;
+      }
+
+      if (stakes === 'knockout') p *= 1.20;
+      else if (stakes === 'ipl') p *= 1.10;
+      p = Math.min(100, Math.max(5, p));
+      wp = Math.min(99.5, Math.max(0.5, wp));
+
+      document.getElementById('simPressScore').innerText = p.toFixed(1) + ' / 100';
+      document.getElementById('simWinProb').innerText = wp.toFixed(1) + '%';
+      document.getElementById('simRRR').innerText = rrr.toFixed(2) + ' RPO';
+      document.getElementById('simTactical').innerHTML = `Required: <strong>${needed}</strong> runs off <strong>${balls}</strong> balls. Recommended Clash: <strong>Rinku Singh</strong> vs <strong>Matheesha Pathirana</strong>.`;
+    }
+  </script>
+</body>
+</html>
