@@ -1,8 +1,8 @@
-# Raw data pack (exclude large 41MB delivery CSV from web deployment)
+# Raw data pack & binary caches (exclude large 41MB delivery CSV)
 Data Pack/
 *.feather
 
-# Python cache & virtual environments
+# Python caches & virtual environments
 __pycache__/
 *.py[cod]
 *$py.class

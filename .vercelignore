@@ -1,25 +1,12 @@
-# Ignore Python scripts and Streamlit app so Vercel treats this as a static HTML/JS project
-*.py
-requirements.txt
-streamlit_app/
-build_model.py
-compute_rankings.py
-generate_charts.py
-generate_pdf_report.py
-render_pdf_pages.py
-
-# Ignore large raw dataset
+# Ignore Python pipeline & backend scripts from Vercel static web deployment
+scripts/
 Data Pack/
 *.feather
-
-# Python caches & virtualenvs
 __pycache__/
 *.pyc
 .venv/
 env/
 venv/
-
-# OS artifacts
 .DS_Store
 Thumbs.db
 __MACOSX/

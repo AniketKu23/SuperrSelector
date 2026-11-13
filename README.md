@@ -82,53 +82,45 @@ $$\hat{\theta}_{\text{adj}} = \frac{N \cdot \theta_{\text{sample}} + K \cdot \mu
 
 ## 🚀 Deploying to Vercel
 
-### Option 1: Direct GitHub Import (Recommended)
+The root of this repository is configured strictly as a **Static Web Project** (`index.html` + `vercel.json`).
+
+### Direct GitHub Import
 1. Push this repository to your GitHub account:
    ```bash
-   git init
    git add .
-   git commit -m "Initial commit: SupeRR Selector Season 2 by Aniket Kumar"
-   git branch -M main
-   git remote add origin https://github.com/<your-username>/superr-selector-season-2.git
-   git push -u origin main
+   git commit -m "Update Vercel static deployment"
+   git push
    ```
-2. Go to [Vercel](https://vercel.com/new).
-3. Click **Import Repository** and select `superr-selector-season-2`.
-4. Keep the Framework Preset as **Other** (or Static). Vercel automatically detects `index.html` and `vercel.json`.
-5. Click **Deploy**. Your dashboard will be live on `https://your-project.vercel.app` in under 30 seconds!
-
-### Option 2: Deploy via Vercel CLI
-```bash
-npm install -g vercel
-vercel
-```
+2. In [Vercel](https://vercel.com/new), import your repository.
+3. Keep the Framework Preset as **Other** (Static).
+4. Click **Deploy**. Vercel will publish your dashboard to global CDN in seconds with zero build errors!
 
 ---
 
 ## 💻 Local Development & Usage
 
 ### 1. View the Web Dashboard locally
-Simply double-click [`index.html`](index.html) or run a local web server:
+Double-click [`index.html`](index.html) or run:
 ```bash
 npx serve .
 ```
 
 ### 2. Run the Interactive Streamlit Dashboard Locally
 ```bash
-pip install -r requirements.txt
-streamlit run streamlit_app/app.py
+pip install -r scripts/requirements.txt
+streamlit run scripts/app.py
 ```
 
 ### 3. Re-run Pipeline or Rebuild PDF Report
 ```bash
 # Recompute ratings from raw data
-python compute_rankings.py
+python scripts/compute_rankings.py
 
 # Generate visualization assets
-python generate_charts.py
+python scripts/generate_charts.py
 
 # Rebuild publication-grade PDF report
-python generate_pdf_report.py
+python scripts/generate_pdf_report.py
 ```
 
 ---
@@ -138,23 +130,23 @@ python generate_pdf_report.py
 ```
 ├── index.html                   # Vercel entry point (Interactive Web Dashboard)
 ├── dashboard.html               # Portable mirror of dashboard
-├── vercel.json                  # Vercel configuration & header rules
-├── .vercelignore                # Directs Vercel to host strictly as a static web project
+├── vercel.json                  # Vercel configuration (framework: null, cleanUrls)
+├── .vercelignore                # Directs Vercel to ignore python files
 ├── package.json                 # Project metadata & npm scripts
-├── requirements.txt             # Python dependencies
 ├── .gitignore                   # Clean Git tracking configuration
 ├── SupeRR_Selector_Season_2_Methodology_Report.pdf  # Formal 6-Page PDF Submission
-├── streamlit_app/
-│   └── app.py                   # Local interactive Streamlit web dashboard
-├── compute_rankings.py          # Core modeling, win probability & shrinkage engine
-├── build_model.py               # Feature extraction & situation parser
-├── generate_pdf_report.py       # ReportLab PDF compilation script
-├── generate_charts.py           # Matplotlib / Seaborn visualization generator
-├── render_pdf_pages.py          # High-resolution PDF-to-PNG renderer
 ├── top_batters_pressure.csv     # Enriched batter ratings output
 ├── top_bowlers_pressure.csv     # Enriched bowler ratings output
 ├── report_screenshots/          # 6 HD screenshots of the PDF methodology report
-└── assets/                      # HD dashboard screenshots and visual figures
+├── assets/                      # HD dashboard screenshots and chart figures
+└── scripts/                     # Python modeling, analytics & Streamlit scripts
+    ├── requirements.txt         # Python dependencies
+    ├── app.py                   # Local interactive Streamlit web application
+    ├── compute_rankings.py      # Core modeling, win probability & shrinkage engine
+    ├── build_model.py           # Feature extraction & situation parser
+    ├── generate_charts.py       # Visualization generator
+    ├── generate_pdf_report.py   # ReportLab PDF compilation script
+    └── render_pdf_pages.py      # High-resolution PDF-to-PNG renderer
 ```
 
 ---
